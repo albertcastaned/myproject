@@ -1,27 +1,123 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
     {% for post in posts.items %}
+    <script type="text/javascript">
+       $(document).ready(function() {
+         $("#{{post.id}}_like").click(function() {
+           var number = $('#{{post.id}}_like_result').text();
+           var dislikecount = $('#{{post.id}}_dislike_result').text();
+           var post_id = {{ post.id }}
+           $.ajax({
+              url: "{{ url_for('posts.like') }}",
+              data: {'number': number,'dislikecount':dislikecount,'post_id':post_id},
+              method: 'POST',
+              success: function(data) {
+                $('#{{post.id}}_like_result').html(data['result'])
+                $('#{{post.id}}_dislike_result').html(data['dislikecount'])
+                if (data['color'] == "Green")
+                {
+                $('#{{post.id}}_like').removeClass("btn-outline-primary").addClass("btn-primary");
+                $('#{{post.id}}_dislike').removeClass("btn-danger").addClass("btn-outline-danger");
+              }else{
+                $('#{{post.id}}_like').removeClass("btn-primary").addClass("btn-outline-primary");
+              }}
+            });
+         });
+       });
+        </script>
+        <script type="text/javascript">
+           $(document).ready(function() {
+             $("#{{post.id}}_dislike").click(function() {
+               var number = $('#{{post.id}}_dislike_result').text();
+               var likecount = $('#{{post.id}}_like_result').text();
+               var post_id = {{ post.id }}
+               $.ajax({
+                  url: "{{ url_for('posts.dislike') }}",
+                  data: {'number': number,'likecount':likecount,'post_id':post_id},
+                  method: 'POST',
+                  success: function(data) {
+                    $('#{{post.id}}_dislike_result').html(data['result'])
+                    $('#{{post.id}}_like_result').html(data['likecount'])
+                    if (data['color'] == "Green")
+                    {
+                    $('#{{post.id}}_dislike').removeClass("btn-outline-danger").addClass("btn-danger");
+                    $('#{{post.id}}_like').removeClass("btn-primary").addClass("btn-outline-primary");
+
+                  }else{
+                    $('#{{post.id}}_dislike').removeClass("btn-danger").addClass("btn-outline-danger");
+                  }}
+                });
+             });
+           });
+            </script>
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+              <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
               <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
             </div>
-            <h2><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
+            <h2><a class="article-title" href="{{ url_for('posts.post', post_id=post.id) }}">{{ post.title }}</a></h2>
+
+            {% if post.post_image != 'None' %}
+            <a data-toggle="modal" data-target="#{{post.id}}"><img src="{{ url_for('static', filename='profile_pics/' + post.post_image) }}" style="float:center;width:100%;height:100%;object-fit:cover;"/></a>
+                      <div id="{{post.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="{{ url_for('static', filename='profile_pics/' + post.post_image) }}" style="float:center;width:100%;height:100%;object-fit:cover;" class="img-responsive">
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+            {% endif %}
+            {% if post.content %}
+            {% if post.find_links(post.content) %}
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/{{post.embed_link(post.content)}}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            {% endif %}
             <p class="article-content">{{ post.content }}</p>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+
+            <div class="like-and-dislike">
+              <hr>
+
+              {% if post.check_liked(current_user.id,post.id) %}
+              <button class="btn btn-primary" id='{{post.id}}_like'><ion-icon name="thumbs-up" size="medium"></ion-icon>  Likes: <span id="{{post.id}}_like_result">{{post.likes_count}}</span></button>
+              {% else %}
+              <button class="btn btn-outline-primary" id='{{post.id}}_like'><ion-icon name="thumbs-up" size="medium"></ion-icon>  Likes: <span id="{{post.id}}_like_result">{{post.likes_count}}</span></button>
+              {% endif %}
+              {% if post.check_disliked(current_user.id,post.id) %}
+              <button style="float:right;" class="btn btn-danger" id='{{post.id}}_dislike'><ion-icon name="thumbs-down" size="medium"></ion-icon>  Dislikes:     <span id="{{post.id}}_dislike_result">{{post.dislikes}}</span></button>
+              {% else %}
+              <button style="float:right;" class="btn btn-outline-danger" id='{{post.id}}_dislike'><ion-icon name="thumbs-down" size="medium"></ion-icon>  Dislikes: <span id="{{post.id}}_dislike_result">{{post.dislikes}}</span></button>
+              {% endif %}
+
+            {% else %}
+
+              <a href="{{ url_for('users.login') }}"><button class="btn btn-outline-primary"><ion-icon name="thumbs-up" size="medium"></ion-icon>  Likes:     <span>{{post.likes_count}}</span></button></a>
+              <a href="{{ url_for('users.login') }}"><button style="float:right;" class="btn btn-outline-danger"><ion-icon name="thumbs-down" size="medium"></ion-icon>  Dislikes:     <span>{{post.dislikes}}</span></button></a>
+
+            {% endif %}
+
           </div>
         </article>
     {% endfor %}
     {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if posts.page == page_num %}
-          <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-info mb-4" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
         {% else %}
-          <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% else %}
         ...
       {% endif %}
     {% endfor %}
+
+
+
 {% endblock content %}
