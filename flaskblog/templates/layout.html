@@ -7,37 +7,37 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
     {% if title %}
-        <title>Flask Blog - {{ title }}</title>
+        <title>Shitty Test Website - {{ title }}</title>
     {% else %}
-        <title>Flask Blog</title>
+        <title>Shitty Test Website</title>
     {% endif %}
 </head>
 <body>
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="/">Flask Blog</a>
+          <a class="navbar-brand mr-4 " href="/"><span class="icon-nav">Shitty Test Website</span></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+              <a class="nav-item nav-link" href="{{ url_for('main.home') }}"><ion-icon class="icon-nav" name="md-home" size="large"></ion-icon><span class="icon-nav">   Home</span></a>
+              <a class="nav-item nav-link" href="{{ url_for('main.about') }}"><ion-icon class="icon-nav" name="md-information-circle" size="large"></ion-icon><span class="icon-nav">   About</span></a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
-                <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-                <a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a>
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                <a class="nav-item nav-link" href="{{ url_for('posts.new_post') }}"><ion-icon class="icon-nav" name="md-add-circle" size="large"></ion-icon><span class="icon-nav">   New Post</span></a>
+                <a class="nav-item nav-link" href="{{ url_for('posts.test') }}"><ion-icon class="icon-nav" name="notifications" size="large"></ion-icon>  <span class="icon-nav"> Notifications </span></a>
+                <a class="nav-item nav-link" href="{{ url_for('users.account') }}"><ion-icon class="icon-nav" name="contact" size="large"></ion-icon>  <span class="icon-nav">   Account</span></a>
+                <a class="nav-item nav-link" href="{{ url_for('users.logout') }}"><ion-icon class="icon-nav" name="log-out" size="large"></ion-icon><span class="icon-nav"> Logout</span></a>
               {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-                <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.login') }}"><ion-icon class="icon-nav" name="log-in" size="large"></ion-icon><span class="icon-nav">   Log in</span></a>
+                <a class="nav-item nav-link" href="{{ url_for('users.register') }}"><ion-icon class="icon-nav" name="person-add" size="large"></ion-icon><span class="icon-nav">   Register</span></a>
               {% endif %}
             </div>
           </div>
@@ -58,19 +58,7 @@
           {% endwith %}
           {% block content %}{% endblock %}
         </div>
-        <div class="col-md-4">
-          <div class="content-section">
-            <h3>Our Sidebar</h3>
-            <p class='text-muted'>You can put any information here you'd like.
-              <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Posts</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light">etc</li>
-              </ul>
-            </p>
-          </div>
-        </div>
+
       </div>
     </main>
 
@@ -79,6 +67,12 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/ionicons@4.1.2/dist/ionicons.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type=text/javascript src="{{url_for('static', filename='jquery.js') }}"></script>
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
 </body>
 </html>
