@@ -3,11 +3,20 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flaskblog import db, login_manager
 from flask_login import UserMixin,current_user
-
+from datetime import datetime
+from pytz import timezone
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    message = db.Column(db.String(500))
+    time = timezone('America/Hermosillo')
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now(time))
+    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,7 +70,8 @@ class User(db.Model, UserMixin):
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    time = timezone('America/Hermosillo')
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now(time))
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_image = db.Column(db.String(20), nullable=False, default='None')
@@ -99,9 +109,17 @@ class Post(db.Model):
     @staticmethod
     def embed_link(content):
         string="https://www.youtube.com/watch?v="
-        start = string.find(content)
-        finalstring = content[start+33:start+44]
+        start = content.find(string)
+        finalstring = content[start+32:start+43]
         return finalstring
+
+    @staticmethod
+    def count_comments(post_id):
+        comments = Comment.query.filter_by(post_id=post_id)
+        i = 0
+        for comment in comments:
+            i+=1
+        return i
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -144,6 +162,6 @@ class Comment(db.Model):
         start = string.find(content)
         finalstring = content[start+33:start+44]
         return finalstring
-    
+
     def __repr__(self):
         return f"Comment('{self.title}', '{self.date_posted}')"

@@ -49,6 +49,7 @@ a.article-title:hover {
 
 .article-content {
   white-space: pre-line;
+  word-wrap: break-word;
 }
 
 .article-img {

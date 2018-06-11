@@ -260,7 +260,3 @@ def dislike_comment():
         data = {'result': result,'color':"Red"}
         data = jsonify(data)
         return data
-
-@posts.route('/test')
-def test():
-    return render_template('test.html')

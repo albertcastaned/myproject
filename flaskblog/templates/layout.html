@@ -32,7 +32,7 @@
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('posts.new_post') }}"><ion-icon class="icon-nav" name="md-add-circle" size="large"></ion-icon><span class="icon-nav">   New Post</span></a>
-                <a class="nav-item nav-link" href="{{ url_for('posts.test') }}"><ion-icon class="icon-nav" name="notifications" size="large"></ion-icon>  <span class="icon-nav"> Notifications </span></a>
+                <a class="nav-item nav-link" href="#"><ion-icon class="icon-nav" name="chatboxes" size="large"></ion-icon>  <span class="icon-nav"> Chat </span></a>
                 <a class="nav-item nav-link" href="{{ url_for('users.account') }}"><ion-icon class="icon-nav" name="contact" size="large"></ion-icon>  <span class="icon-nav">   Account</span></a>
                 <a class="nav-item nav-link" href="{{ url_for('users.logout') }}"><ion-icon class="icon-nav" name="log-out" size="large"></ion-icon><span class="icon-nav"> Logout</span></a>
               {% else %}
