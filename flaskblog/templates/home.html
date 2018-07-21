@@ -9,7 +9,7 @@
          $("#{{post.id}}_like").click(function() {
            var number = $('#{{post.id}}_like_result').text();
            var dislikecount = $('#{{post.id}}_dislike_result').text();
-           var post_id = {{ post.id }}
+           var post_id = "{{post.id}}";
            $.ajax({
               url: "{{ url_for('posts.like') }}",
               data: {'number': number,'dislikecount':dislikecount,'post_id':post_id},
@@ -33,7 +33,7 @@
              $("#{{post.id}}_dislike").click(function() {
                var number = $('#{{post.id}}_dislike_result').text();
                var likecount = $('#{{post.id}}_like_result').text();
-               var post_id = {{ post.id }}
+               var post_id = "{{ post.id }}";
                $.ajax({
                   url: "{{ url_for('posts.dislike') }}",
                   data: {'number': number,'likecount':likecount,'post_id':post_id},
