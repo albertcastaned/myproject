@@ -1,17 +1,18 @@
 @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
 
 body {
-  background: #fafafa;
-  color: #333333;
+  background: #12151f;
+  color: #fff;
   margin-top: 5rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+  color: #cbd5db;
 }
 
 .bg-steel {
-  background-color: #5f788a;
+  background-color: #1b212f;
+   border-bottom: 1px solid white;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -30,15 +31,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .content-section {
-  background: #ffffff;
+  background: #1b212f;
   padding: 10px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 3px;
+  border: 1px solid white;
+  border-radius: 7px;
   margin-bottom: 20px;
 }
 
 .article-title {
-  color: #444444;
+  color: #cbd5db;
   margin-bottom: 20px;
 }
 
@@ -67,7 +68,7 @@ a.article-title:hover {
   margin-top: 50px;
 }
 .article-metadata a:hover {
-  color: #333;
+  color: #fff;
   text-decoration: none;
 }
 
@@ -108,4 +109,213 @@ a.article-title:hover {
   bottom: 0;
   left: 0;
   cursor: pointer;
+}
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 130px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    padding-top: 100px;
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+.side-button{
+  background-color: #1b212f;
+  position: fixed;
+  padding:20px;
+  left:0;
+  top: 40%;
+  border: 1px solid white;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  border-left: 0px;
+  z-index: 1; /* Stay on top */
+  float:left;
+}
+
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+    .item {background-color: #fff;}
+
+}
+.song-art{
+  border: 1px solid #d4d4d4;
+  width:70px;
+  height:70px;
+  margin-right: 10px;
+}
+input{
+  width: 600px;
+height: 35px;
+}
+.item:hover {
+    background-color: #1b213f;
+    transform: scale(1.1);
+
+}
+.playing:hover{
+  transform: scale(1.2);
+}
+@keyframes copied-pulsate {
+  0% {
+    //border-width: 6px;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+  }
+  70% {
+    //border-width: 2px;
+    box-shadow: 0 0 0 25px rgba(255, 255, 255, 0);
+  }
+    100% {
+    //border-width: 6px;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.playing{
+  position: relative;
+  border: 1px solid #d4d4d4;
+  z-index: 101;
+  padding: 10px;
+  margin-top:15px;
+  margin-bottom: 15px;
+  word-wrap: break-word;
+  animation: animateElement linear .3s;
+  animation-iteration-count: 1;
+  -webkit-transition: .3s ease;
+-moz-transition: .3s ease;
+-ms-transition: .3s ease;
+-o-transition: .3s ease;
+transition: all .2s ease-in-out;
+transform: scale(1.03);
+animation: copied-pulsate 2.5s linear infinite;
+  border-radius: 15px;
+
+}
+.item {
+  position: relative;
+  background-color: #1b212f;
+  border: 1px solid #d4d4d4;
+  z-index: 99;
+  padding: 10px;
+  margin-top:10px;
+  margin-bottom: 10px;
+  padding-right: 50px;
+  word-wrap: break-word;
+  animation: animateElement linear .3s;
+  animation-iteration-count: 1;
+  -webkit-transition: .3s ease;
+-moz-transition: .3s ease;
+-ms-transition: .3s ease;
+-o-transition: .3s ease;
+transition: all .2s ease-in-out;
+
+}
+
+.playlist-item:hover {
+    background-color: #1b213f;
+    transform: scale(1.1);
+}
+
+.playlist-item {
+  position: relative;
+  background-color: #1b212f;
+  border: 1px solid #d4d4d4;
+  z-index: 99;
+  padding: 10px;
+  margin-top:15px;
+  margin-bottom: 15px;
+  word-wrap: break-word;
+  animation: animateElement linear .3s;
+  animation-iteration-count: 1;
+  -webkit-transition: .3s ease;
+-moz-transition: .3s ease;
+-ms-transition: .3s ease;
+-o-transition: .3s ease;
+transition: all .2s ease-in-out;
+
+
+}
+
+
+@keyframes animateElement{
+  0% {
+    opacity:0;
+    transform:  translate(0px,-15px);
+  }
+  100% {
+    opacity:1;
+    transform:  translate(0px,0px);
+  }
+}
+
+.fa{
+  font-size:40px !important;
+  position: absolute;
+right: 20px;
+top: 25px;
+}
+
+.btn-circle.btn-lg {
+  width: 60px;
+  height: 60px;
+  padding: 10px 16px;
+  font-size: 25px;
+  line-height: 1.33;
+  border-radius: 30px;
+}
+.btn-vote{
+  width: 80px;
+  height: 70px;
+  padding: 10px 15px 0px 15px;
+  font-size: 25px;
+  line-height: 1.33;
+  border-radius: 60px;
+}
+
+@-webkit-keyframes filler {
+    0% {
+        width:0;
+    }
+}
+@-moz-keyframes filler {
+    0% {
+        width:0;
+    }
+}
+@keyframes filler {
+    0% {
+        width:0;
+    }
 }

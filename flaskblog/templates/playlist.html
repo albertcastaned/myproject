@@ -1,0 +1,349 @@
+{% extends "layout.html" %} {% block content %}
+
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+<div class="input-group">
+<input class="form-control" autocomplete="off" id="myInput" type="text" placeholder="Search song...">
+<button type="submit" class="input-group-btn go inline" id="search_btn" onclick="search()">Search</button>
+</div>
+
+
+<div id="items" class="item-content">
+
+</div>
+
+<div id="playlist" class="playlist-content">
+  <h1 style="margin-top:20px;">Current playlist:</h1>
+
+</div>
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-bottom">
+  <div class="container">
+      <button class="btn btn-success btn-circle btn-lg scroll-up"><i class="fas fa-chevron-up"></i></button>
+      <button id="skip" onclick="vote()" class="btn btn-success btn-vote btn-lg"><i class="fas fa-step-forward"></i><h5><div id="votes"></div></h5></button>
+      <button class="btn btn-success btn-circle btn-lg scroll-down"><i class="fas fa-chevron-down"></i></button>  </div>
+</nav>
+<footer>
+  <div class="container" style="margin-top:150px;margin-bottom:150px;">
+    <a href="https://open.spotify.com/user/12158815080/playlist/1B20Su8DGkJY7uuFGWUfck?si=gAdeqLQ1Qq2EUk2fDccv9A"><button class="btn btn-success" style="font-size: 20px;display: flex;justify-content: center;padding:30px;border-radius:30px;">Link to generated Spotify playlist</button></a>
+  </div>
+</footer>
+<script src="//js.pusher.com/4.2/pusher.min.js"></script>
+<script type="application/javascript">
+
+// Enable pusher logging - don't include this in production
+var pusher = new Pusher('d199b9ff7984c46c4f83', {
+cluster: 'us2',
+encrypted: true
+});
+
+var channel = pusher.subscribe('chatchannel');
+channel.bind('pusher:subscription_succeeded', function() {
+$.post('/get-vote');
+});
+
+  setInterval(function(){
+    $.post('/get-vote');
+  }, 3000); // send every 3000 milliseconds
+
+
+
+channel.bind('update-count',function(data){
+let count = data.count;
+document.getElementById('votes').innerText = count + "/3";
+console.log(count);
+});
+</script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+  if(localStorage['voted'] == 'true') {
+    $("#skip").addClass('active');
+    return;
+  }
+
+}, false);
+
+function skip(){
+  var access_token = "{{token}}";
+  var url = 'https://api.spotify.com/v1/me/player/next';
+  $.ajax(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + access_token,
+      'Content-Type': 'application/json'
+    },
+    success: function(r) {
+      console.log("Song skipped");
+    },
+    error: function(r) {
+      console.log('error');
+    }
+  });
+}
+
+function vote() {
+
+  if(localStorage['voted'] == 'true') {
+    $("#skip").addClass('active');
+    console.log("Device already voted");
+    return;
+  } // abort if already voted
+
+  localStorage['voted'] = 'true'; // you can only store strings
+  $("#skip").addClass('active');
+  $.post('/vote');
+}
+
+$(function()
+{
+  $(".scroll-up").click(function(){
+  $("html,body").animate({scrollTop: 0}, "1000");
+  return false})
+
+  $(".scroll-down").click(function(){
+  $("html,body").animate({scrollTop: $(document).height()-$(window).height()}, "1000");
+  return false})
+})
+
+</script>
+<script>
+var input = document.getElementById("myInput");
+input.addEventListener("keyup", function(event) {
+
+  event.preventDefault();
+  if (event.keyCode === 13) {
+    document.getElementById("search_btn").click();
+  }
+});
+
+function search()
+{
+
+  $( ".item" ).remove();
+  $( ".remove" ).remove();
+  var inp = document.getElementById("myInput").value;
+  if(inp!='')
+  {
+  var access_token = "{{token}}";
+  var arr = [];
+  var url = 'https://api.spotify.com/v1/search';
+
+  $.ajax(url, {
+    method: 'GET',
+    data: {
+      q: inp,
+      type: "track",
+      limit: 5
+    },
+    headers: {
+      'Authorization': 'Bearer ' + access_token,
+      'Content-Type': 'application/json'
+    },
+    success: function(r) {
+      var index;
+      $("#items").append("<h1 class='remove' style='margin-top:20px;'>Add a song:</h1>");
+      for(index = 0; index < 5; index++)
+      {
+        var res = r.tracks.items[index].name + ' - ' + r.tracks.items[index].artists[0].name;
+        arr[index] = res.slice(0, 50) + '...';
+        var img = r.tracks.items[index].album.images[0].url;
+        $("#items").append("<div class='item' onclick='addToPlaylist(this.id);' id='" + r.tracks.items[index].uri + "'><img src='" + img + "' class='song-art'> " + arr[index] + "<span><i id='i&" + r.tracks.items[index].uri + "' class='fa fas fa-plus-circle'></i></span> </div>");
+      }
+    },
+    error: function(r) {
+      alert('error');
+    }
+
+
+  });
+  // Detect all clicks on the document
+document.addEventListener("click", function(event) {
+
+// If user clicks inside the element, do nothing
+if (event.target.closest(".item-content")) return;
+
+// If user clicks outside the element, hide it!
+    $( ".item" ).remove();
+    $( ".remove" ).remove();
+});
+}
+}
+
+</script>
+
+<script>
+var arr = [];
+var temp = ['null'];
+var equal = false;
+var access_token = "{{token}}";
+var hue = 120;
+var percentage;
+var total;
+var current;
+var timeout;
+var temp_play = '';
+function addToPlaylist(track) {
+  var url = 'https://api.spotify.com/v1/users/12158815080/playlists/1B20Su8DGkJY7uuFGWUfck/tracks';
+  var tracks = [track];
+  var div = document.getElementById(track);
+  div.style.backgroundColor="green";
+  var icon = document.getElementById("i&"+track);
+
+
+  icon.classList.remove('fa-plus-circle');
+  icon.classList.add('fa-check-circle');
+
+
+  $.ajax(url, {
+    method: 'POST',
+    data: JSON.stringify(tracks),
+    dataType: 'text',
+    headers: {
+      'Authorization': 'Bearer ' + access_token,
+      'Content-Type': 'application/json'
+    },
+    success: function(r) {
+      console.log('Song added succesfully');
+        updatePlaylist();
+    },
+    error: function(r) {
+      console.log(r);
+    }
+  });
+}
+function updatePlaylist() {
+
+
+var link_playlist = 'https://api.spotify.com/v1/users/12158815080/playlists/1B20Su8DGkJY7uuFGWUfck/tracks';
+var link_playing = 'https://api.spotify.com/v1/me/player/currently-playing';
+
+
+
+$.ajax(link_playlist, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer ' + access_token,
+    'Content-Type': 'application/json'
+  },
+  success: function(r) {
+
+    var index;
+    var length = r.total;
+    //Check if there is an update
+    for(index = 0; index < length; index++)
+    {
+
+      var res = r.items[index].track.name + ' - ' + r.items[index].track.artists[0].name;
+
+      if(temp[index]==res.slice(0, 50) + '...')
+      {
+        equal = true;
+      }
+      else
+      {
+        equal = false;
+        break;
+      }
+
+    }
+
+    //Add to page
+    if(equal==false)
+    {
+    console.log("Change in playlist, updating page...");
+    $( ".playing" ).remove();
+    $( ".playlist-item" ).remove();
+    for(index = 0; index < length; index++)
+    {
+      var res = r.items[index].track.name + ' - ' + r.items[index].track.artists[0].name;
+      arr[index] = res.slice(0, 50) + '...';
+      temp[index] = res.slice(0, 50) + '...';
+      var img = r.items[index].track.album.images[0].url;
+      var id = 'play&' + r.items[index].track.uri;
+      $("#playlist").append("<div id='" + id + "'class='playlist-item'><img src='" + img + "' class='song-art'> " + arr[index] + " </div>");
+
+    }
+    }
+  },
+  error: function(r) {
+    console.log('error');
+  }
+
+
+});
+
+$.ajax(link_playing, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer ' + access_token,
+    'Content-Type': 'application/json'
+  },
+  success: function(r) {
+    if(r!=null && r.is_playing)
+    {
+    $( ".playing" ).addClass('playlist-item');
+    $( ".playing" ).removeClass('playing');
+    $( ".playlist-item" ).css("background", "#1b212f");
+    var playing = document.getElementById("play&"+r.item.uri);
+    if(playing!=null)
+    {
+
+    console.log("Playing song, getting data...");
+    total = r.item.duration_ms;
+    current = r.progress_ms;
+    percentage = (current/total)*100;
+    percentage = Math.round(percentage);
+    var rest = 100 - percentage;
+    var percentageString = percentage + "%";
+    var restString = rest + "%";
+    playing.className = "playing";
+    rainbow();
+    if(playing!=temp_play){
+      localStorage['voted'] = '';
+      $("#skip").removeClass('active');
+      console.log("Local vote status reset");
+    }
+    temp_play = playing;
+
+  }
+  }else{
+    $( ".playing" ).addClass('playlist-item');
+    $( ".playing" ).removeClass('playing');
+    $( ".playlist-item" ).css("background", "#1b212f");
+
+  }
+  },
+  error: function(r) {
+    console.log('error');
+  }
+
+
+});
+}
+
+function rainbow()
+{
+
+    if ($(".playing")[0]){
+      var col1 = Math.abs((hue % 720) - 360);
+      current += 100;
+      percentage = (current/total)*100;
+        hue++ ;
+		document.getElementsByClassName("playing")[0].style.background = 'linear-gradient(to right, hsl('+col1 +',70%, 50%)'+ percentage +'%,#1b212f 0%)';
+  }
+}
+
+updatePlaylist();
+setInterval(updatePlaylist, 5000);
+setInterval	(rainbow, 100);
+
+
+</script>
+
+
+
+
+
+{% endblock content %}

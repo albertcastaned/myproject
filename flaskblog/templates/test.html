@@ -25,20 +25,26 @@
 
       }, false);
     </script>
+    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-bottom">
+      <div class="container">
+        <div class="navbar-item is-expanded">
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-bottom">
-    <div class="container">
-      <div class="navbar-item is-expanded">
+          <input id="chat_text" class="input" type="text" style="width:1000px;">
+          <button id="chat_btn" class="btn btn-success">Post</button>
+          <div style="color:white;">
+            Users connected:
+          <a id="member-count"></a>
+          </div>
 
-        <input id="chat_text" class="input" type="text" style="width:1000px;">
-        <button id="chat_btn" class="btn btn-success">Post</button>
-
-
-
+        </div>
       </div>
-    </div>
 
-  </nav>
+    </nav>
+    <nav onclick="openNav()" class="side-button">
+      <span><ion-icon name="arrow-dropright" size="large"></ion-icon></span>
+    </nav>
+
+
 
   <div id="content" class="container" style="overflow-y:auto; margin-bottom: 200px;">
 
@@ -57,48 +63,58 @@
         </div>
       </div>
     </article>
+    <hr />
     {% endfor %}
+
+  </div>
+
+
+  <div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <div class="side-content">
+  </div>
   </div>
 
 
 
 
-
-  <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+  <script src="//js.pusher.com/4.2/pusher.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 
-  <script>
+  <script type="application/javascript">
     $(function() {
-      let username = "{{ current_user.username }}";
 
-      $('#chat_btn').on('click', function() {
-        let message = $('#chat_text').val();
-        if (message != ''){
-        $.post('/message', {'username' : username, 'message' : message}, function() {
-          $('#chat_text').val('');
-        });
-      }
-      });
-      var input = document.getElementById("chat_text");
-      input.addEventListener("keyup", function(event) {
-          event.preventDefault();
-          if (event.keyCode === 13) {
-              document.getElementById("chat_btn").click();
-          }
-      });
           // Enable pusher logging - don't include this in production
       Pusher.logToConsole = true;
-      var pusher = new Pusher('1d2e73839f1798803872', {
+      var pusher = new Pusher('d199b9ff7984c46c4f83', {
         cluster: 'us2',
         encrypted: true
       });
-      var channel = pusher.subscribe('chat-channel');
+
+      var channel = pusher.subscribe('chatchannel');
+      channel.bind('pusher:subscription_succeeded', function() {
+          $.post('/get-count');
+      });
+
+            setInterval(function(){
+              $.post('/get-count');
+            }, 6000); // send every 10000 milliseconds
+
+
+
+      channel.bind('update-count',function(data){
+        let count = data.count;
+        document.getElementById('member-count').innerText = count;
+      });
+
+
       channel.bind('new-message', function(data) {
           let name = data.username;
           let message = data.message;
           let time = data.time;
           let image = data.image;
+
           let message_template = `<article class="media">
                                   <div class="media-content">
                                     <div class="content">
@@ -112,13 +128,49 @@
                                       </p>
                                     </div>
                                   </div>
-                                </article>`;
+                                </article>
+                                <hr />`;
 
           $('#content').append(message_template);
         });
 
+        let username = "{{ current_user.username }}";
+
+        $('#chat_btn').on('click', function() {
+          let message = $('#chat_text').val();
+          if (message != ''){
+          $.post('/message', {'username' : username, 'message' : message}, function() {
+            $('#chat_text').val('');
+          });
+        }
+        });
+
+
+
+        //Keyboard enter
+        var input = document.getElementById("chat_text");
+        input.addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                document.getElementById("chat_btn").click();
+            }
+        });
 
     });
+
+  </script>
+  <script>
+  //Sidebar
+  /* Set the width of the side navigation to 250px */
+  function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+
+  }
+
+  /* Set the width of the side navigation to 0 */
+  function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+  }
   </script>
 
 
