@@ -19,50 +19,10 @@ pusher_client = pusher.Pusher(
   cluster='us2',
   ssl=True
 )
-username = '12158815080'
-playlist_id = '4eEdWa9SqJIIvJd4HpTl1Y'
-scope = 'playlist-modify-public playlist-modify-private user-read-playback-state user-read-currently-playing user-modify-playback-state'
-redirect='http://albertcastaned.pythonanywhere.com/callback/q'
+
 main = Blueprint('main', __name__)
 
-index_add_counter = 0
-@main.route("/callback/q")
-def callback():
-    return render_template('playlist.html')
 
-def skip_song():
-    token = util.prompt_for_user_token(username, scope, redirect_uri=redirect)
-    if token:
-        sp = spotipy.Spotify(auth=token)
-        sp.trace = False
-        sp.next_track()
-    else:
-        print("Can't get token for", username)
-
-@main.route('/vote', methods=['POST'])
-def vote():
-    try:
-        print("method accessed")
-        global index_add_counter # means: in this scope, use the global name
-        index_add_counter+=1
-        print(index_add_counter)
-        if index_add_counter == 3:
-            skip_song()
-            index_add_counter=0
-        return jsonify({'result' : 'success'})
-    except:
-        print('ERROR')
-        return jsonify({'result' : 'failure'})
-
-@main.route("/get-vote",methods=['POST'])
-def get_vote():
-    try:
-        global index_add_counter # means: in this scope, use the global name
-        pusher_client.trigger('chatchannel', 'update-count', {'count':index_add_counter})
-        return jsonify({'result' : 'success'})
-    except:
-        print('ERROR')
-        return jsonify({'result' : 'failure'})
 
 @main.route("/")
 @main.route("/home")
@@ -71,14 +31,6 @@ def home():
     posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('home.html', posts=posts)
 
-@main.route("/playlist")
-def playlist():
-    token = util.prompt_for_user_token(username, scope, redirect_uri=redirect)
-    if token:
-        print(token)
-    else:
-        print("Can't get token for", username)
-    return render_template('playlist.html',token=token)
 
 @main.route("/get-count",methods=['POST'])
 def get_count():
